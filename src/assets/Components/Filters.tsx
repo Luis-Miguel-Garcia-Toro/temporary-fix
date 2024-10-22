@@ -11,9 +11,10 @@ import {
   Button,
   Collapse,
   Pagination,
-  DatePicker,
   Input,
 } from "antd";
+
+import DatePicker  from "./CustomDatePicker" 
 import { useForm, Controller } from "react-hook-form";
 import UserServices from "../Services/Sevices"; // Ensure the path is correct
 import "../../Styles/Skeleton.scss";
@@ -208,11 +209,11 @@ const Filters: React.FC = () => {
             ? Number(selectedMission.agrupadorMotor)
             : null
         );
-        const startDate = new Date(selectedMission.fechaInicio);
-        const endDate = new Date(selectedMission.fechaFin);
+        const startDate = moment(selectedMission.fechaInicio, 'YYYY-mm-dd');
+        const endDate = moment(selectedMission.fechaFin, 'YYYY-mm-dd');
 
-        setValue("fechaInicio", startDate);
-        setValue("fechaFin", endDate);
+        setValue("fechaInicio", startDate.toDate());
+        setValue("fechaFin", endDate.toDate());
         setValue("misionId", selectedMission.id);
         setValue("nombreMision", selectedMission.nombreMision);
         setValue("estado", Number(selectedMission.estado));
@@ -409,18 +410,27 @@ const Filters: React.FC = () => {
                     <Controller
                       name="fechaInicio"
                       control={control}
-                      render={({ field }) => (
-                        <DatePicker
+                      render={({ field }) => {
+                        debugger 
+                        console.log('field',field.value )
+                        console.log('field',typeof field.value )
+                        return (
+                        (<DatePicker
                           {...field}
                           format={dateFormat}
                           placeholder="Fecha Inicial"
                           style={{ width: "100%" }}
                           onChange={(date) =>
-                            handleInputChange("fechaInicio", date)
+                          {
+                            debugger
+                            console.log('date', date)
+                            console.log('typeof date', typeof date)
+                            handleInputChange("fechaInicio",date as any)
                           }
-                          value={field.value ? moment(field.value) : null}
-                        />
-                      )}
+                          }
+                          value={moment(field.value).toISOString()}
+                        />) as any
+                      )}}
                     />
                   </Form.Item>
                 </Card>

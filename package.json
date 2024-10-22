@@ -10,6 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/material": "^6.1.5",
+    "@mui/x-date-pickers": "^7.21.0",
     "antd": "^5.18.3",
     "axios": "^1.7.2",
     "moment": "^2.30.1",
