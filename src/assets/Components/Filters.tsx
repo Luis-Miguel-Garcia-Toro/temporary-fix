@@ -17,6 +17,7 @@ import {
 import DatePicker  from "./CustomDatePicker" 
 import { useForm, Controller } from "react-hook-form";
 import UserServices from "../Services/Sevices"; // Ensure the path is correct
+import type { Moment } from "moment";
 import "../../Styles/Skeleton.scss";
 
 import PhotoCard from "./PhotoCard";
@@ -111,8 +112,8 @@ const Filters: React.FC = () => {
   }, []);
   interface FormValues {
     misionId: number | null;
-    fechaInicio: Date | null;
-    fechaFin: Date | null;
+    fechaInicio: Moment | null;
+    fechaFin: Moment | null;
     motorId: number | null;
     agrupadorMotor: number | null;
     tipoMision: string;
@@ -209,11 +210,12 @@ const Filters: React.FC = () => {
             ? Number(selectedMission.agrupadorMotor)
             : null
         );
-        const startDate = moment(selectedMission.fechaInicio, 'YYYY-mm-dd');
-        const endDate = moment(selectedMission.fechaFin, 'YYYY-mm-dd');
 
-        setValue("fechaInicio", startDate.toDate());
-        setValue("fechaFin", endDate.toDate());
+        const startDate = moment(selectedMission.fechaInicio, moment.ISO_8601);
+        const endDate = moment(selectedMission.fechaFin,  moment.ISO_8601);
+
+        setValue("fechaInicio", startDate as any);
+        setValue("fechaFin", endDate as any);
         setValue("misionId", selectedMission.id);
         setValue("nombreMision", selectedMission.nombreMision);
         setValue("estado", Number(selectedMission.estado));
@@ -230,9 +232,9 @@ const Filters: React.FC = () => {
     setExpandFilters(!expandFilters);
   };
 
-  const handleInputChange = (fieldName: any, date: moment.Moment | null) => {
+  const handleInputChange = (fieldName: any, date: Moment | null) => {
     // Convertimos el objeto de moment a Date de JavaScript si no es null
-    setValue(fieldName, date ? date.toDate() : null);
+    setValue(fieldName, date);
   };
   const addFilterPho = async (data: any) => {
     try {
@@ -275,10 +277,10 @@ const Filters: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      let gdv = Observers.gdv;
-      let jdv = Observers.jdv;
-      let sdv = Observers.supervisor;
-      let rdv = Observers.rdv;
+      const gdv = Observers.gdv;
+      const jdv = Observers.jdv;
+      const sdv = Observers.supervisor;
+      const rdv = Observers.rdv;
       //gdv: watch("gdv"),
       //jdv: watch("jdv"),
       //supervisor: watch("sdv"),
@@ -411,9 +413,6 @@ const Filters: React.FC = () => {
                       name="fechaInicio"
                       control={control}
                       render={({ field }) => {
-                        debugger 
-                        console.log('field',field.value )
-                        console.log('field',typeof field.value )
                         return (
                         (<DatePicker
                           {...field}
@@ -422,13 +421,13 @@ const Filters: React.FC = () => {
                           style={{ width: "100%" }}
                           onChange={(date) =>
                           {
-                            debugger
-                            console.log('date', date)
-                            console.log('typeof date', typeof date)
                             handleInputChange("fechaInicio",date as any)
                           }
                           }
-                          value={moment(field.value).toISOString()}
+                          value={ (()=>{
+                            console.log('field.value', field.value)
+                            return field.value
+                          })()}
                         />) as any
                       )}}
                     />
@@ -448,9 +447,9 @@ const Filters: React.FC = () => {
                           placeholder="Fecha Final"
                           style={{ width: "100%" }}
                           onChange={(date) =>
-                            handleInputChange("fechaFin", date)
+                            handleInputChange("fechaFin", date as any)
                           }
-                          value={field.value ? moment(field.value) : null}
+                          value={field.value}
                         />
                       )}
                     />
